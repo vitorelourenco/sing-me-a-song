@@ -17,6 +17,11 @@ const recommendations = {
     name: "Test recommendation",
     genresIds: [1, 2147483647],
     youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  },
+  linkNotFromYoutube:{
+    name: "Test recommendation",
+    genresIds: [1, 2147483647],
+    youtubeLink: "https://www.globo.com/"
   }
 };
 

@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import recommendationSchemas from '../schemas/recommendationSchemas';
 import recommendationService from '../services/recommendationService';
 
+
 async function create(req: Request,res: Response){
   try {
     const {error: badRequest} = recommendationSchemas.create.validate(req.body);
@@ -16,6 +17,8 @@ async function create(req: Request,res: Response){
     if(err?.code === "23505") return res.sendStatus(409);
     //23503: postgres error code for foreign key violation https://www.postgresql.org/docs/9.2/errcodes-appendix.html
     if(err?.code === "23503") return res.sendStatus(406);
+    //smas400: custom error > BadRequest identified in a deeper layer
+    if(err?.message === "smas400") return res.sendStatus(400);
     res.sendStatus(500);
   }
 }
