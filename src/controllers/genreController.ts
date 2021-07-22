@@ -12,6 +12,8 @@ async function create(req:Request,res:Response){
     res.status(201).send(newGenre);
   } catch(err) {
     console.log(err);
+    //postgres status code for unique_violation https://www.postgresql.org/docs/9.2/errcodes-appendix.html
+    if(err?.code === "23505") return res.sendStatus(409);
     res.sendStatus(500);
   }
 }
