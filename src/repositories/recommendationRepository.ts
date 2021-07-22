@@ -31,17 +31,41 @@ async function create(name:string, genresIds:number[], youtubeLink:string){
   return newRecommendation;
 }
 
-async function upvote(id:number){
+async function vote(id:number, val:number){
   const dbScore = await connection.query(`
     UPDATE recommendations
-    SET score = score + 1
-    WHERE id = $1
+    SET score = score + $1
+    WHERE id = $2
     RETURNING score
-  `,[id]);
+  `,[val, id]);
   return dbScore.rows[0];
+}
+
+async function upvote(id:number){
+  return await vote(id, 1);
+}
+
+async function downvote(id:number){
+  return await vote(id, -1);
+}
+
+async function remove(id:number){
+  await connection.query(`
+    DELETE 
+    FROM genres_recommendations
+    WHERE "recommendationId" = $1
+  `,[id]);
+
+  await connection.query(`
+    DELETE 
+    FROM recommendations
+    WHERE id = $1
+  `,[id]);
 }
 
 export default {
   create,
-  upvote
+  remove,
+  upvote,
+  downvote
 }

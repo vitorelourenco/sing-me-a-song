@@ -22,10 +22,10 @@ export async function create(req: Request,res: Response){
   }
 }
 
-export async function upvote(req: Request, res:Response){
+async function vote(req: Request, res:Response, voteFunction:Function){
   try {
     const id = parseInt(req.params.id);
-    const body = await recommendationService.upvote(id);
+    const body = await voteFunction(id);
     res.status(200).send(body);
   } catch(err) {
     console.log(err);
@@ -33,4 +33,12 @@ export async function upvote(req: Request, res:Response){
     if(err?.message === "smas404") return res.sendStatus(404);
     res.sendStatus(500);
   }
+}
+
+export async function upvote(req: Request, res:Response){
+  await vote(req,res,recommendationService.upvote)
+}
+
+export async function downvote(req: Request, res:Response){
+  await vote(req,res,recommendationService.downvote)
 }

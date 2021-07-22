@@ -103,3 +103,38 @@ describe("POST /recommendations/:id/upvote", ()=>{
     expect(response.status).toEqual(404);
   });
 })
+
+
+describe("POST /recommendations/:id/downvote", ()=>{
+  let recommendation:any; 
+  beforeEach(async()=>{
+    await clearRecommendations();
+    recommendation = await createRecommendation();
+  });
+
+  const downvoteThis = async (id:number) =>
+    await supertest(app).post(`/recommendations/${id}/downvote`);
+
+  it("should respond with status 200 if the ID exists", async()=>{
+    const response = await downvoteThis(recommendation.id);
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with score -1 when downvoting a new recommendation", async()=>{
+    const response = await downvoteThis(recommendation.id);
+    expect(response.body.score).toEqual(-1);
+  });
+
+  it("should respond with status 404 when score reaches -6", async()=>{
+    for(let i=0;i<5;i++){
+      await downvoteThis(recommendation.id);
+    }
+    const response = await downvoteThis(recommendation.id);
+    expect(response.status).toEqual(404);
+  });
+
+  it("should respond with status 404 if the ID does not exist", async()=>{
+    const response = await downvoteThis(2147483647);
+    expect(response.status).toEqual(404);
+  });
+})
