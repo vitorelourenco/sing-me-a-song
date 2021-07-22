@@ -2,21 +2,18 @@ import "../../src/setup";
 
 import supertest from "supertest";
 import app from "../../src/app";
-import connection from "../../src/database";
-import toMatchSchema from "./schemas/toMatchSchema";
-import genreSchemas from "./schemas/genreSchemas";
-
+import toMatchSchema from "../schemas/toMatchSchema";
+import genreSchemas from "../schemas/genreSchemas";
+import {clearDatabase, closeConnection} from '../utils/database';
 expect.extend({ toMatchSchema });
 
 afterAll(() => {
-  connection.end();
+  closeConnection();
 });
 
 describe("POST /genres", () => {
   beforeEach(async ()=>{
-    await connection.query(`DELETE FROM genres_recommendations`);
-    await connection.query(`DELETE FROM genres`);
-    await connection.query(`DELETE FROM recommendations`);
+    await clearDatabase()
   });
 
   const postThis = async (data: object) =>
@@ -50,4 +47,10 @@ describe("POST /genres", () => {
     const response = await postThis(emptyNameGenre);
     expect(response.status).toEqual(400);
   });
+
+  it("should respond with status 409 when the genre name is taken", async ()=>{
+    await postThis(validGenre);
+    const response = await postThis(validGenre);
+    expect(response.status).toEqual(409);
+  })
 });
