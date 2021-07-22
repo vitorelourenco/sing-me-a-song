@@ -7,19 +7,18 @@ import recommendations from '../utils/recommendations';
 import recommendationSchemas from "../schemas/recommendationSchemas";
 import { clearDatabase, closeConnection , clearRecommendations} from "../utils/database";
 import { createGenre } from "../factories/genreFactory";
+import {createRecommendation} from "../factories/recommendationFactory";
 
 expect.extend({ toMatchSchema });
 
 beforeAll(async()=>{
   await clearDatabase();
-  //recommendations.valid needs valid genres
+  //recommendations.valid from:
+  //import recommendations from '../utils/recommendations';
+  //needs valid genres
   //create 2 valid genres, their ids should be 1 and 2
   await createGenre({name:"electronic"});
   await createGenre({name:"pop"});
-})
-
-beforeEach(async()=>{
-  await clearRecommendations();
 })
 
 afterAll(async () => {
@@ -30,6 +29,9 @@ describe("POST /recommendations", () => {
   beforeEach(async () => {
     await clearRecommendations();
   });
+  afterAll(async()=>{
+    await clearRecommendations();
+  })
 
   const postThis = async (data: object) =>
     await supertest(app).post("/recommendations").send(data);
@@ -75,3 +77,29 @@ describe("POST /recommendations", () => {
     expect(response.status).toEqual(409);
   });
 });
+
+describe("POST /recommendations/:id/upvote", ()=>{
+  let recommendation:any; 
+  beforeEach(async()=>{
+    await clearRecommendations();
+    recommendation = await createRecommendation();
+  });
+
+  const upvoteThis = async (id:number) =>
+    await supertest(app).post(`/recommendations/${id}/upvote`);
+
+  it("should respond with status 200 if the ID exists", async()=>{
+    const response = await upvoteThis(recommendation.id);
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with score 1 when upvoting a new recommendation", async()=>{
+    const response = await upvoteThis(recommendation.id);
+    expect(response.body.score).toEqual(1);
+  });
+
+  it("should respond with status 404 if the ID does not exist", async()=>{
+    const response = await upvoteThis(2147483647);
+    expect(response.status).toEqual(404);
+  });
+})
