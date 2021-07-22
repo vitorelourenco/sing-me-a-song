@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest -i",
+    "test": "NODE_ENV=test npx jest -i",
     "build": "npx tsc --outDir dist",
-    "start": "node dist/server.js",
+    "start": "NODE_ENV=production node dist/server.js",
     "postinstall": "npm run build",
-    "dev": "npx nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/server.ts\""
+    "dev": "NODE_ENV=dev npx nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/server.ts\""
   },
   "keywords": [],
   "author": "",
@@ -29,7 +29,9 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "joi": "^17.4.1",
     "pg": "^8.6.0"
   }
 }

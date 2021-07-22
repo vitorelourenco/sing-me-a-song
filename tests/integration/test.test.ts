@@ -1,5 +1,12 @@
+import "../../src/setup";
+
 import supertest from "supertest";
 import app from "../../src/app";
+import connection from '../../src/database';
+
+afterAll(()=>{
+  connection.end();
+})
 
 describe("GET /test", () => {
   it("should answer with text \"OK!\" and status 200", async () => {
