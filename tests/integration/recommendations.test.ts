@@ -138,3 +138,19 @@ describe("POST /recommendations/:id/downvote", ()=>{
     expect(response.status).toEqual(404);
   });
 })
+
+describe("GET /recommendations/random", ()=>{
+
+  const getRandom = async () =>
+    await supertest(app).get(`/recommendations/random`);
+
+  it("should respond with status 200", async ()=>{
+    const response = await getRandom();
+    expect(response.status).toEqual(200);
+  })
+
+  it("should respond with a valid recommendation", async ()=>{
+    const response = await getRandom();
+    expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendation);
+  });
+});

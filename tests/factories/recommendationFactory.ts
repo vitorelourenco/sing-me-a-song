@@ -1,8 +1,7 @@
 import connection from "../../src/database";
 
-export async function createRecommendation() {
+export async function createRecommendation({youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"} = {}) {
   const name = "test";
-  const youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
   const genresIds = [1,2]
   const dbRecommendationId = await connection.query(`
     INSERT INTO recommendations
