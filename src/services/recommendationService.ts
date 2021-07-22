@@ -17,8 +17,18 @@ async function upvote(id:number){
   return body;
 }
 
-async function downvote(id:number){
-  return await recommendationRepository.upvote(id);
+async function downvote(id:number):Promise<any>{
+  const body = await recommendationRepository.downvote(id);
+  if (!body?.score && body?.score !== 0){
+    throw new ErrorWithStatus("smas404");
+  }
+  //if score<-5 delete and recall downvote, this will throw smas404
+  if (body?.score < -5 ){
+    await recommendationRepository.remove(id);
+    return await downvote(id);
+  } else {
+    return body;
+  }
 }
 
 export default {
