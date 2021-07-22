@@ -13,6 +13,11 @@ export async function clearRecommendations (){
   await connection.query(`DELETE FROM recommendations`);
 }
 
+export async function clearGenres (){
+  await connection.query(`TRUNCATE genres_recommendations RESTART IDENTITY`);
+  await connection.query(`DELETE FROM genres`);
+}
+
 export async function closeConnection () {
   await connection.end();
 }

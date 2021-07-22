@@ -13,17 +13,17 @@ expect.extend({ toMatchSchema });
 beforeAll(async()=>{
   await clearDatabase();
   //recommendations.valid needs valid genres
-  //create 2 valid genres with ids 1 and 2
-  await createGenre();
-  await createGenre();
+  //create 2 valid genres, their ids should be 1 and 2
+  await createGenre({name:"electronic"});
+  await createGenre({name:"pop"});
 })
 
 beforeEach(async()=>{
   await clearRecommendations();
 })
 
-afterAll(() => {
-  closeConnection();
+afterAll(async () => {
+  await closeConnection();
 });
 
 describe("POST /recommendations", () => {
