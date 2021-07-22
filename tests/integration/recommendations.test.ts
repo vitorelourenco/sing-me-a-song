@@ -59,6 +59,11 @@ describe("POST /recommendations", () => {
     expect(response.status).toEqual(400);
   });
 
+  it("should respond with status 400 when any youtubeLink is not a youtube link", async()=>{
+    const response = await postThis(recommendations.linkNotFromYoutube);
+    expect(response.status).toEqual(400);
+  })
+
   it("should respond with status 406 when any genreId does not exist", async()=>{
     const response = await postThis(recommendations.genreIdNotRegistered);
     expect(response.status).toEqual(406);
