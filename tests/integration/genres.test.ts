@@ -2,32 +2,39 @@ import "../../src/setup";
 
 import supertest from "supertest";
 import app from "../../src/app";
-import connection from '../../src/database';
-import toMatchSchema from './schemas/toMatchSchema';
-import genreSchemas from './schemas/genreSchemas';
+import connection from "../../src/database";
+import toMatchSchema from "./schemas/toMatchSchema";
+import genreSchemas from "./schemas/genreSchemas";
 
 expect.extend({ toMatchSchema });
 
-afterAll(()=>{
+afterAll(() => {
   connection.end();
-})
+});
 
 describe("POST /genres", () => {
-  const postThis = async (data:object) => await supertest(app).post("/genres").send(data);
-  const validGenre = {name:"Test song"};
-  const wrongTypeGenre:any[] = [];
+  beforeEach(async ()=>{
+    await connection.query(`DELETE FROM genres_recommendations`);
+    await connection.query(`DELETE FROM genres`);
+    await connection.query(`DELETE FROM recommendations`);
+  });
+
+  const postThis = async (data: object) =>
+    await supertest(app).post("/genres").send(data);
+  const validGenre = { name: "Test song" };
+  const wrongTypeGenre: any[] = [];
   const missingNameGenre = {};
-  const emptyNameGenre = {name: ""};
+  const emptyNameGenre = { name: "" };
 
   it("should respond with status 201 for a successful request", async () => {
     const response = await postThis(validGenre);
     expect(response.status).toEqual(201);
   });
 
-  it("should respond with the valid created genre", async() =>{
+  it("should respond with the valid created genre", async () => {
     const response = await postThis(validGenre);
     expect(response.body).toMatchSchema(genreSchemas.dbGenre);
-  })
+  });
 
   it("should respond with status 400 for a payload that is not an Object", async () => {
     const response = await postThis(wrongTypeGenre);
@@ -43,5 +50,4 @@ describe("POST /genres", () => {
     const response = await postThis(emptyNameGenre);
     expect(response.status).toEqual(400);
   });
-
 });

@@ -1,6 +1,6 @@
-import joi from 'joi';
+import joi from "joi";
 
-const toMatchSchema = (received:any, joiSchema: joi.AnySchema) => {
+const toMatchSchema = (received: any, joiSchema: joi.AnySchema) => {
   const { error } = joiSchema.validate(received);
   const pass = !error;
   if (pass) {
