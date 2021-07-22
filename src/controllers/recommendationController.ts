@@ -2,8 +2,7 @@ import {Request, Response} from 'express';
 import recommendationSchemas from '../schemas/recommendationSchemas';
 import recommendationService from '../services/recommendationService';
 
-
-async function create(req: Request,res: Response){
+export async function create(req: Request,res: Response){
   try {
     const {error: badRequest} = recommendationSchemas.create.validate(req.body);
     if (badRequest) return res.sendStatus(400);
@@ -23,7 +22,15 @@ async function create(req: Request,res: Response){
   }
 }
 
-
-export default {
-  create
+export async function upvote(req: Request, res:Response){
+  try {
+    const id = parseInt(req.params.id);
+    const body = await recommendationService.upvote(id);
+    res.status(200).send(body);
+  } catch(err) {
+    console.log(err);
+    //smas404: custom error > param ID is not registered
+    if(err?.message === "smas404") return res.sendStatus(404);
+    res.sendStatus(500);
+  }
 }

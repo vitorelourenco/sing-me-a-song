@@ -1,6 +1,9 @@
-import connection from '../database';
+import connection from "../../src/database";
 
-async function create(name:string, genresIds:number[], youtubeLink:string){
+export async function createRecommendation() {
+  const name = "test";
+  const youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  const genresIds = [1,2]
   const dbRecommendationId = await connection.query(`
     INSERT INTO recommendations
     (name, "youtubeLink")
@@ -29,19 +32,4 @@ async function create(name:string, genresIds:number[], youtubeLink:string){
   }
 
   return newRecommendation;
-}
-
-async function upvote(id:number){
-  const dbScore = await connection.query(`
-    UPDATE recommendations
-    SET score = score + 1
-    WHERE id = $1
-    RETURNING score
-  `,[id]);
-  return dbScore.rows[0];
-}
-
-export default {
-  create,
-  upvote
 }
