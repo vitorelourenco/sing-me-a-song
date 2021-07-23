@@ -197,3 +197,35 @@ describe("GET /recommendations/top/:amount", () => {
     expect(response.status).toEqual(404);
   });
 });
+
+
+describe("GET /recommendations/genres/:id/random", () => {
+  beforeEach(async () => {
+    await fillDatabase();
+  });
+
+  const getRandomOfGenreId = async (id:number) =>
+    await agent.get(`/recommendations/genres/${id}/random`);
+
+  it("should respond with status 200", async () => {
+    const response = await getRandomOfGenreId(1);
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with a valid recommendation", async () => {
+    const response = await getRandomOfGenreId(1);
+    expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendation);
+  });
+
+  it("should respond with a recommendation that contains the genre", async () => {
+    const response = await getRandomOfGenreId(1);
+    const includesGenre:boolean = !!response.body.genres.find((genre:{id:number, name:string})=>genre.id===1);
+    expect(includesGenre).toEqual(true);
+  });
+
+  it("should respond with status 404 if no results are found", async () => {
+    await clearDatabase();
+    const response = await getRandomOfGenreId(1);
+    expect(response.status).toEqual(404);
+  });
+});
