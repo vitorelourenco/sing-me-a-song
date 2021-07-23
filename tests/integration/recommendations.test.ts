@@ -64,9 +64,9 @@ describe("POST /recommendations", () => {
     expect(response.status).toEqual(400);
   });
 
-  it("should respond with status 406 when any genreId does not exist", async () => {
+  it("should respond with status 404 when the requested genreId does not exist", async () => {
     const response = await postThis(recommendations.genreIdNotRegistered);
-    expect(response.status).toEqual(406);
+    expect(response.status).toEqual(404);
   });
 
   it("should respond with status 409 when the youtubeLink is taken", async () => {
