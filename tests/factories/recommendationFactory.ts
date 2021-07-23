@@ -2,18 +2,19 @@ import connection from "../../src/database";
 
 export async function createRecommendation({
   youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  name = "test",
+  genresIds = [1, 2],
+  score = 0
 } = {}) {
-  const name = "test";
-  const genresIds = [1, 2];
   const dbRecommendationId = await connection.query(
     `
     INSERT INTO recommendations
-    (name, "youtubeLink")
+    (name, "youtubeLink", score)
     VALUES
-    ($1, $2)
+    ($1, $2, $3)
     RETURNING *
   `,
-    [name, youtubeLink]
+    [name, youtubeLink, score]
   );
   const newRecommendation = dbRecommendationId.rows[0];
   newRecommendation.genres = [];

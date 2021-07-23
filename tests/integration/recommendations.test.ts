@@ -9,20 +9,14 @@ import {
   clearDatabase,
   closeConnection,
   clearRecommendations,
+  fillDatabase
 } from "../utils/database";
-import { createGenre } from "../factories/genreFactory";
 import { createRecommendation } from "../factories/recommendationFactory";
 
 expect.extend({ toMatchSchema });
 
 beforeAll(async () => {
-  await clearDatabase();
-  //recommendations.valid from:
-  //import recommendations from '../utils/recommendations';
-  //needs valid genres
-  //create 2 valid genres, their ids should be 1 and 2
-  await createGenre({ name: "electronic" });
-  await createGenre({ name: "pop" });
+  await fillDatabase();
 });
 
 afterAll(async () => {
@@ -31,9 +25,6 @@ afterAll(async () => {
 
 describe("POST /recommendations", () => {
   beforeEach(async () => {
-    await clearRecommendations();
-  });
-  afterAll(async () => {
     await clearRecommendations();
   });
 
@@ -144,24 +135,7 @@ describe("POST /recommendations/:id/downvote", () => {
 
 describe("GET /recommendations/random", () => {
   beforeAll(async () => {
-    await createRecommendation({
-      youtubeLink: "https://www.youtube.com/watch?v=avYphbJsbaM",
-    });
-    await createRecommendation({
-      youtubeLink: "https://www.youtube.com/watch?v=FJBgzX2HMe8",
-    });
-    await createRecommendation({
-      youtubeLink: "https://www.youtube.com/watch?v=C06jmdXfVF0",
-    });
-    await createRecommendation({
-      youtubeLink: "https://www.youtube.com/watch?v=pqLvFfwcqfw",
-    });
-    await createRecommendation({
-      youtubeLink: "https://www.youtube.com/watch?v=ub3pgNSL0S4",
-    });
-    await createRecommendation({
-      youtubeLink: "https://www.youtube.com/watch?v=mxSRmLBuL4k",
-    });
+    await fillDatabase()
   });
 
   const getRandom = async () =>
