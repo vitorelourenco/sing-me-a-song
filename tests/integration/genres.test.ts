@@ -92,21 +92,21 @@ describe("GET /genres/:id", ()=>{
     await fillDatabase();
   })
 
-  const getGenres = async()=>agent.get("/genres:id");
+  const getGenreById = async(id:number)=>agent.get(`/genres/${id}`);
  
   it("should respond with status 200", async()=>{
-    const response = await getGenres();
+    const response = await getGenreById(1);
     expect(response.status).toEqual(200);
   });
 
-  it("should respond with a list of valid genred recommendations", async()=>{
-    const response = await getGenres();
-    expect(response.body).toMatchSchema(genreSchemas.dbGenredRecommendations);
+  it("should respond with a genred recommendations object", async()=>{
+    const response = await getGenreById(1);
+    expect(response.body.recommendations).toMatchSchema(genreSchemas.dbGenredRecommendations);
   });
 
   it("should respond with status 404 if the DB is empty", async()=>{
     await clearDatabase();
-    const response = await getGenres();
+    const response = await getGenreById(1);
     expect(response.status).toEqual(404);
   });
 });
