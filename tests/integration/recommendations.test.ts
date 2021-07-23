@@ -177,7 +177,7 @@ describe("GET /recommendations/top/:amount", () => {
   });
 
   it("should respond with status 200 regardless of $AMOUNT if there are items in DB", async () => {
-    const response = await getTop(undefined);
+    const response = await getTop(NaN);
     expect(response.status).toEqual(200);
   });
 

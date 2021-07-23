@@ -56,3 +56,14 @@ export async function getRandom(req: Request, res: Response) {
     res.sendStatus(500);
   }
 }
+
+export async function getTopRecommendations(req:Request, res:Response){
+  try {
+    const topRecommendations = await recommendationService.getTopRecommendations(req);
+    res.send(topRecommendations);
+  } catch (err) {
+    console.log(err);
+    if (err?.code() === "smas404") return res.sendStatus(404);
+    res.sendStatus(500);
+  }
+}
