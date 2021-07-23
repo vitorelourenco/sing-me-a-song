@@ -20,13 +20,15 @@ afterAll(async () => {
   await closeConnection();
 });
 
+const agent = supertest(app)
+
 describe("POST /genres", () => {
   beforeEach(async () => {
     await clearGenres();
   });
 
   const postThis = async (data: object) =>
-    await supertest(app).post("/genres").send(data);
+    await agent.post("/genres").send(data);
 
   it("should respond with status 201 for a successful request", async () => {
     const response = await postThis(genres.valid);
@@ -57,5 +59,24 @@ describe("POST /genres", () => {
     await postThis(genres.valid);
     const response = await postThis(genres.valid);
     expect(response.status).toEqual(409);
+  });
+});
+
+describe("GET /genres", ()=>{
+  const getGenres = async()=>agent.get("/genres");
+
+  it("should respond with status 200", async()=>{
+    const response = await getGenres();
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with a list of valid genres", async()=>{
+    const response = await getGenres();
+    expect(response.body).toMatchSchema(genreSchemas.dbGenreList);
+  });
+
+  it("should respond with status 404 if the DB is empty", async()=>{
+    const response = await getGenres();
+    expect(response.status).toEqual(404);
   });
 });

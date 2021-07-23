@@ -5,6 +5,9 @@ const dbGenre = joi.object({
   name: joi.string().min(1).required(),
 });
 
+const dbGenreList = joi.array().items(dbGenre).required();
+
 export default {
   dbGenre,
+  dbGenreList
 };
