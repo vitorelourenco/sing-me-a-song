@@ -1,9 +1,9 @@
 class ErrorWithStatus extends Error {
   constructor(msg: string) {
-      super(msg);
-      Object.setPrototypeOf(this, ErrorWithStatus.prototype);
+    super(msg);
+    Object.setPrototypeOf(this, ErrorWithStatus.prototype);
   }
-  code(){
+  code() {
     return this.message;
   }
 }

@@ -75,18 +75,18 @@ export async function mergeGenresWithRecommendations(
 export async function pickRandomWinner(
   mergedRecommendations: MergedRecommendation[]
 ) {
-
-  const finalRecommendation = await (async()=>{
-    if (mergedRecommendations[0]){
+  const finalRecommendation = await (async () => {
+    if (mergedRecommendations[0]) {
       mergedRecommendations.sort(() => 0.5 - Math.random());
-      return mergedRecommendations[0]
+      return mergedRecommendations[0];
     }
+    //pick any recommendation with any score that is an integer
     const lastResort = await mergeGenresWithRecommendations(-2147483648, ">=");
-    if (lastResort[0]){
+    if (lastResort[0]) {
       lastResort.sort(() => 0.5 - Math.random());
       return lastResort[0];
     }
-    throw new ErrorWithStatus("smas404")
+    throw new ErrorWithStatus("smas404");
   })();
 
   return finalRecommendation;

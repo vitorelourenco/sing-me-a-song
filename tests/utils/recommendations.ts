@@ -1,7 +1,7 @@
-const emptyArray:any[] = [];  
+const emptyArray: any[] = [];
 
 const recommendations = {
-  valid : {
+  valid: {
     name: "Test recommendation",
     genresIds: [1, 2],
     youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -11,18 +11,18 @@ const recommendations = {
   emptyProps: {
     name: "",
     genresIds: emptyArray,
-    youtubeLink: ""
+    youtubeLink: "",
   },
-  genreIdNotRegistered:{
+  genreIdNotRegistered: {
     name: "Test recommendation",
     genresIds: [1, 2147483647],
-    youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   },
-  linkNotFromYoutube:{
+  linkNotFromYoutube: {
     name: "Test recommendation",
     genresIds: [1, 2147483647],
-    youtubeLink: "https://www.globo.com/"
-  }
+    youtubeLink: "https://www.globo.com/",
+  },
 };
 
 export default recommendations;

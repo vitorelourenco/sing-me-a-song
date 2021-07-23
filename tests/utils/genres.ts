@@ -1,10 +1,10 @@
-const emptyArray:any[] = [];  
+const emptyArray: any[] = [];
 
 const genres = {
-  valid : { name: "Test song" },
+  valid: { name: "Test song" },
   wrongType: emptyArray,
   missingProps: {},
-  emptyProps: { name: "" }
+  emptyProps: { name: "" },
 };
 
 export default genres;

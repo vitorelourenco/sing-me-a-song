@@ -1,4 +1,4 @@
-import './setup';
+import "./setup";
 import app from "./app";
 
 const port = process.env.PORT;
