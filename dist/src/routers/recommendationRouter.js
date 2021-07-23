@@ -1,0 +1,12 @@
+"use strict";
+exports.__esModule = true;
+var express_1 = require("express");
+var recommendationController_1 = require("../controllers/recommendationController");
+var recommendation = express_1.Router();
+recommendation.post("/", recommendationController_1.create);
+recommendation.post("/:id/upvote", recommendationController_1.upvote);
+recommendation.post("/:id/downvote", recommendationController_1.downvote);
+recommendation.get("/random", recommendationController_1.getRandomWithScore);
+recommendation.get("/top/:amount", recommendationController_1.getTopRecommendations);
+recommendation.get("/genres/:id/random", recommendationController_1.getRandomByGenreId);
+exports["default"] = recommendation;
