@@ -1,6 +1,7 @@
 import genreService from "../services/genreService";
 import genreSchemas from "../schemas/genreSchemas";
 import { Request, Response } from "express";
+import { printError } from "../utils/errorWithStatus";
 
 async function create(req: Request, res: Response) {
   try {
@@ -11,31 +12,31 @@ async function create(req: Request, res: Response) {
 
     res.status(201).send(newGenre);
   } catch (err) {
-    console.log(err);
+    printError(err);
     //postgres status code for unique_violation https://www.postgresql.org/docs/9.2/errcodes-appendix.html
     if (err?.code === "23505") return res.sendStatus(409);
     res.sendStatus(500);
   }
 }
 
-async function getAll(req:Request, res:Response){
+async function getAll(req: Request, res: Response) {
   try {
     const genreList = await genreService.getAll();
     res.send(genreList);
   } catch (err) {
-    console.log(err);
+    printError(err);
     if (err?.code() === "smas404") return res.sendStatus(404);
     res.sendStatus(500);
   }
 }
 
-async function getById(req:Request, res:Response){
+async function getById(req: Request, res: Response) {
   try {
     const id = parseInt(req.params.id);
     const genreWithRecommendations = await genreService.getById(id);
     res.send(genreWithRecommendations);
   } catch (err) {
-    console.log(err);
+    printError(err);
     if (err?.code() === "smas404") return res.sendStatus(404);
     res.sendStatus(500);
   }
@@ -44,5 +45,5 @@ async function getById(req:Request, res:Response){
 export default {
   create,
   getAll,
-  getById
+  getById,
 };

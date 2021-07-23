@@ -141,8 +141,7 @@ describe("GET /recommendations/random", () => {
     await fillDatabase();
   });
 
-  const getRandom = async () =>
-    await agent.get(`/recommendations/random`);
+  const getRandom = async () => await agent.get(`/recommendations/random`);
 
   it("should respond with status 200", async () => {
     const response = await getRandom();
@@ -183,7 +182,9 @@ describe("GET /recommendations/top/:amount", () => {
 
   it("should respond with a valid list of recommendations", async () => {
     const response = await getTop(amount);
-    expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendationList);
+    expect(response.body).toMatchSchema(
+      recommendationSchemas.dbRecommendationList
+    );
   });
 
   it("should respond with a list not larger than $AMOUNT", async () => {
@@ -194,6 +195,39 @@ describe("GET /recommendations/top/:amount", () => {
   it("should respond with status 404 if the database is empty", async () => {
     await clearDatabase();
     const response = await getTop(amount);
+    expect(response.status).toEqual(404);
+  });
+});
+
+describe("GET /recommendations/genres/:id/random", () => {
+  beforeEach(async () => {
+    await fillDatabase();
+  });
+
+  const getRandomOfGenreId = async (id: number) =>
+    await agent.get(`/recommendations/genres/${id}/random`);
+
+  it("should respond with status 200", async () => {
+    const response = await getRandomOfGenreId(1);
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with a valid recommendation", async () => {
+    const response = await getRandomOfGenreId(1);
+    expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendation);
+  });
+
+  it("should respond with a recommendation that contains the genre", async () => {
+    const response = await getRandomOfGenreId(1);
+    const includesGenre: boolean = !!response.body.genres.find(
+      (genre: { id: number; name: string }) => genre.id === 1
+    );
+    expect(includesGenre).toEqual(true);
+  });
+
+  it("should respond with status 404 if no results are found", async () => {
+    await clearDatabase();
+    const response = await getRandomOfGenreId(1);
     expect(response.status).toEqual(404);
   });
 });

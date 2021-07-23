@@ -7,6 +7,7 @@ import {
   recommendationSubQuery,
 } from "../utils/recommendations";
 import { Request } from "express";
+import genreService from "./genreService";
 
 async function create(body: {
   name: string;
@@ -64,7 +65,7 @@ async function getRandomWithScore() {
   if (!recommendationsWithGenres[0]) {
     throw new ErrorWithStatus("smas404");
   }
-  return pickRandomWinner(recommendationsWithGenres);
+  return await pickRandomWinner(recommendationsWithGenres);
 }
 
 async function getTopWithLimit(req: Request) {
@@ -77,13 +78,22 @@ async function getTopWithLimit(req: Request) {
   return orderedRecommendationsWithGenres;
 }
 
-async function getAll(){
-  const all =
-    await getRecommendationsWithGenresUsingSubquery("");
+async function getAll() {
+  const all = await getRecommendationsWithGenresUsingSubquery("");
   if (!all[0]) {
     throw new ErrorWithStatus("smas404");
   }
   return all;
+}
+
+async function getRandomByGenreId(id: number) {
+  const genreWithRecommendations = await genreService.getById(id);
+
+  if (!genreWithRecommendations || !genreWithRecommendations?.recommendations) {
+    throw new ErrorWithStatus("smas404");
+  }
+  const recommendations = genreWithRecommendations.recommendations;
+  return await pickRandomWinner(recommendations);
 }
 
 export default {
@@ -92,5 +102,6 @@ export default {
   downvote,
   getRandomWithScore,
   getTopWithLimit,
-  getAll
+  getAll,
+  getRandomByGenreId,
 };

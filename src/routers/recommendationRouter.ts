@@ -5,6 +5,7 @@ import {
   downvote,
   getRandomWithScore,
   getTopRecommendations,
+  getRandomByGenreId,
 } from "../controllers/recommendationController";
 
 const recommendation = Router();
@@ -16,5 +17,6 @@ recommendation.post("/:id/downvote", downvote);
 recommendation.get("/random", getRandomWithScore);
 recommendation.get("/top/:amount", getTopRecommendations);
 
+recommendation.get("/genres/:id/random", getRandomByGenreId);
 
 export default recommendation;
