@@ -94,7 +94,7 @@ export function recommendationSubQuery(
     const tossUp = Math.random();
     const randomBoundary = 0.7;
     const scoreBoundary = 11;
-    const comparison = tossUp < randomBoundary ? "<" : ">=";
+    const comparison = tossUp < randomBoundary ? ">=" : "<";
     return `WHERE score ${comparison} ${scoreBoundary}`;
   }
   function subQueryUsingTopAmount() {
