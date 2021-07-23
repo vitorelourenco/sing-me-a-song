@@ -1,7 +1,31 @@
+import { number } from "joi";
 import connection from "../database";
+import ErrorWithStatus from "../utils/errorWithStatus";
 
 async function create(name: string, genresIds: number[], youtubeLink: string) {
-  const dbRecommendationId = await connection.query(
+  //check if genres exist or throw
+  //insert new recommendation
+  //link recommendation to genres
+  
+  const genres:{id:number, name:string}[] = [];
+
+  for (const genreId of genresIds){
+    const dbGenre = await connection.query(
+      `
+        SELECT *
+        FROM genres
+        WHERE id = $1
+      `,
+      [genreId]
+    );
+    if (dbGenre?.rows[0]){
+      genres.push(dbGenre.rows[0]);
+    } else {
+      throw new ErrorWithStatus("smas404");
+    }
+  }
+
+  const dbRecommendation = await connection.query(
     `
     INSERT INTO recommendations
     (name, "youtubeLink")
@@ -11,8 +35,8 @@ async function create(name: string, genresIds: number[], youtubeLink: string) {
   `,
     [name, youtubeLink]
   );
-  const newRecommendation = dbRecommendationId.rows[0];
-  newRecommendation.genres = [];
+  const newRecommendation = dbRecommendation.rows[0];
+  newRecommendation.genres = genres;
 
   for (const genreId of genresIds) {
     await connection.query(
@@ -24,17 +48,6 @@ async function create(name: string, genresIds: number[], youtubeLink: string) {
     `,
       [genreId, newRecommendation.id]
     );
-
-    const dbGenre = await connection.query(
-      `
-      SELECT *
-      FROM genres
-      WHERE id = $1
-    `,
-      [genreId]
-    );
-
-    newRecommendation.genres.push(dbGenre.rows[0]);
   }
 
   return newRecommendation;

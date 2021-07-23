@@ -21,6 +21,8 @@ export async function create(req: Request, res: Response) {
     if (err?.code === "23503") return res.sendStatus(404);
     //smas400: custom error > BadRequest identified in a deeper layer
     if (err?.message === "smas400") return res.sendStatus(400);
+    //smas404: custom error > Genre doesn't exist 
+    if (err?.message === "smas404") return res.sendStatus(404);
     res.sendStatus(500);
   }
 }
