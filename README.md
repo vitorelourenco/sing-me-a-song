@@ -6,24 +6,24 @@ Sing Me A Song is a web api for music recommendation. This is a public API and i
 [link](https://sing-me-a-song-vel.herokuapp.com/)
 
 ## Routes 
-https://sing-me-a-song-vel.herokuapp.com/
-GET /recommendations/random
-GET /recommendations/top/$AMOUNT
-GET /recommendations/genres/$ID/random
-GET /genres
-GET /genres/$ID/
+- https://sing-me-a-song-vel.herokuapp.com/
+- GET /recommendations/random
+- GET /recommendations/top/$AMOUNT
+- GET /recommendations/genres/$ID/random
+- GET /genres
+- GET /genres/$ID/
 
-POST /recommendations
-expects: {"name":"$NAME", "youtubeLink":"$LINK"}
+- POST /recommendations </br>
+expects: {"name":"$NAME", "youtubeLink":"$LINK"} </br>
 
-POST /recommendations/$ID/upvote
-expects nothing
+- POST /recommendations/$ID/upvote </br>
+expects nothing </br>
 
-POST /recommendations/$ID/downvote
-expects nothing
+- POST /recommendations/$ID/downvote </br>
+expects nothing </br>
 
-POST /genres
-expects: {"name":"$NAME"}
+- POST /genres </br>
+expects: {"name":"$NAME"} </br>
 
 
 ## Visual Database Structure
