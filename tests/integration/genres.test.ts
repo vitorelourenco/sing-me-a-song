@@ -4,7 +4,7 @@ import supertest from "supertest";
 import app from "../../src/app";
 import toMatchSchema from "../schemas/toMatchSchema";
 import genreSchemas from "../schemas/genreSchemas";
-import { clearDatabase, clearGenres, closeConnection } from "../utils/database";
+import { clearDatabase, clearGenres, closeConnection, fillDatabase } from "../utils/database";
 import genres from "../utils/genres";
 expect.extend({ toMatchSchema });
 
@@ -63,8 +63,12 @@ describe("POST /genres", () => {
 });
 
 describe("GET /genres", ()=>{
-  const getGenres = async()=>agent.get("/genres");
+  beforeEach(async()=>{
+    await fillDatabase();
+  })
 
+  const getGenres = async()=>agent.get("/genres");
+ 
   it("should respond with status 200", async()=>{
     const response = await getGenres();
     expect(response.status).toEqual(200);
@@ -76,6 +80,7 @@ describe("GET /genres", ()=>{
   });
 
   it("should respond with status 404 if the DB is empty", async()=>{
+    await clearDatabase();
     const response = await getGenres();
     expect(response.status).toEqual(404);
   });

@@ -13,6 +13,14 @@ async function create(genre: string) {
   );
 }
 
+async function getAll(){
+  return await connection.query(`
+    SELECT *
+    FROM genres
+  `);
+}
+
 export default {
   create,
+  getAll
 };
