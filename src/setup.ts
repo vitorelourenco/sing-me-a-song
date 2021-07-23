@@ -6,8 +6,7 @@ const path:string = (() => {
       return "./.env.test";
     case "dev":
       return "./.env";
-    case "production":
-      return null;
+    default: return null;
   }
 })();
 
