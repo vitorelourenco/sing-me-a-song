@@ -3,23 +3,27 @@ import "../../src/setup";
 import supertest from "supertest";
 import app from "../../src/app";
 import toMatchSchema from "../schemas/toMatchSchema";
-import recommendations from '../utils/recommendations';
+import recommendations from "../utils/recommendations";
 import recommendationSchemas from "../schemas/recommendationSchemas";
-import { clearDatabase, closeConnection , clearRecommendations} from "../utils/database";
+import {
+  clearDatabase,
+  closeConnection,
+  clearRecommendations,
+} from "../utils/database";
 import { createGenre } from "../factories/genreFactory";
-import {createRecommendation} from "../factories/recommendationFactory";
+import { createRecommendation } from "../factories/recommendationFactory";
 
 expect.extend({ toMatchSchema });
 
-beforeAll(async()=>{
+beforeAll(async () => {
   await clearDatabase();
   //recommendations.valid from:
   //import recommendations from '../utils/recommendations';
   //needs valid genres
   //create 2 valid genres, their ids should be 1 and 2
-  await createGenre({name:"electronic"});
-  await createGenre({name:"pop"});
-})
+  await createGenre({ name: "electronic" });
+  await createGenre({ name: "pop" });
+});
 
 afterAll(async () => {
   await closeConnection();
@@ -29,9 +33,9 @@ describe("POST /recommendations", () => {
   beforeEach(async () => {
     await clearRecommendations();
   });
-  afterAll(async()=>{
+  afterAll(async () => {
     await clearRecommendations();
-  })
+  });
 
   const postThis = async (data: object) =>
     await supertest(app).post("/recommendations").send(data);
@@ -61,15 +65,15 @@ describe("POST /recommendations", () => {
     expect(response.status).toEqual(400);
   });
 
-  it("should respond with status 400 when any youtubeLink is not a youtube link", async()=>{
+  it("should respond with status 400 when any youtubeLink is not a youtube link", async () => {
     const response = await postThis(recommendations.linkNotFromYoutube);
     expect(response.status).toEqual(400);
-  })
+  });
 
-  it("should respond with status 406 when any genreId does not exist", async()=>{
+  it("should respond with status 406 when any genreId does not exist", async () => {
     const response = await postThis(recommendations.genreIdNotRegistered);
     expect(response.status).toEqual(406);
-  })
+  });
 
   it("should respond with status 409 when the youtubeLink is taken", async () => {
     await postThis(recommendations.valid);
@@ -78,78 +82,97 @@ describe("POST /recommendations", () => {
   });
 });
 
-describe("POST /recommendations/:id/upvote", ()=>{
-  let recommendation:any; 
-  beforeEach(async()=>{
+describe("POST /recommendations/:id/upvote", () => {
+  let recommendation: any;
+  beforeEach(async () => {
     await clearRecommendations();
     recommendation = await createRecommendation();
   });
 
-  const upvoteThis = async (id:number) =>
+  const upvoteThis = async (id: number) =>
     await supertest(app).post(`/recommendations/${id}/upvote`);
 
-  it("should respond with status 200 if the ID exists", async()=>{
+  it("should respond with status 200 if the ID exists", async () => {
     const response = await upvoteThis(recommendation.id);
     expect(response.status).toEqual(200);
   });
 
-  it("should respond with score 1 when upvoting a new recommendation", async()=>{
+  it("should respond with score 1 when upvoting a new recommendation", async () => {
     const response = await upvoteThis(recommendation.id);
     expect(response.body.score).toEqual(1);
   });
 
-  it("should respond with status 404 if the ID does not exist", async()=>{
+  it("should respond with status 404 if the ID does not exist", async () => {
     const response = await upvoteThis(2147483647);
     expect(response.status).toEqual(404);
   });
-})
+});
 
-
-describe("POST /recommendations/:id/downvote", ()=>{
-  let recommendation:any; 
-  beforeEach(async()=>{
+describe("POST /recommendations/:id/downvote", () => {
+  let recommendation: any;
+  beforeEach(async () => {
     await clearRecommendations();
     recommendation = await createRecommendation();
   });
 
-  const downvoteThis = async (id:number) =>
+  const downvoteThis = async (id: number) =>
     await supertest(app).post(`/recommendations/${id}/downvote`);
 
-  it("should respond with status 200 if the ID exists", async()=>{
+  it("should respond with status 200 if the ID exists", async () => {
     const response = await downvoteThis(recommendation.id);
     expect(response.status).toEqual(200);
   });
 
-  it("should respond with score -1 when downvoting a new recommendation", async()=>{
+  it("should respond with score -1 when downvoting a new recommendation", async () => {
     const response = await downvoteThis(recommendation.id);
     expect(response.body.score).toEqual(-1);
   });
 
-  it("should respond with status 404 when score reaches -6", async()=>{
-    for(let i=0;i<5;i++){
+  it("should respond with status 404 when score reaches -6", async () => {
+    for (let i = 0; i < 5; i++) {
       await downvoteThis(recommendation.id);
     }
     const response = await downvoteThis(recommendation.id);
     expect(response.status).toEqual(404);
   });
 
-  it("should respond with status 404 if the ID does not exist", async()=>{
+  it("should respond with status 404 if the ID does not exist", async () => {
     const response = await downvoteThis(2147483647);
     expect(response.status).toEqual(404);
   });
-})
+});
 
-describe("GET /recommendations/random", ()=>{
+describe("GET /recommendations/random", () => {
+  beforeAll(async () => {
+    await createRecommendation({
+      youtubeLink: "https://www.youtube.com/watch?v=avYphbJsbaM",
+    });
+    await createRecommendation({
+      youtubeLink: "https://www.youtube.com/watch?v=FJBgzX2HMe8",
+    });
+    await createRecommendation({
+      youtubeLink: "https://www.youtube.com/watch?v=C06jmdXfVF0",
+    });
+    await createRecommendation({
+      youtubeLink: "https://www.youtube.com/watch?v=pqLvFfwcqfw",
+    });
+    await createRecommendation({
+      youtubeLink: "https://www.youtube.com/watch?v=ub3pgNSL0S4",
+    });
+    await createRecommendation({
+      youtubeLink: "https://www.youtube.com/watch?v=mxSRmLBuL4k",
+    });
+  });
 
   const getRandom = async () =>
     await supertest(app).get(`/recommendations/random`);
 
-  it("should respond with status 200", async ()=>{
+  it("should respond with status 200", async () => {
     const response = await getRandom();
     expect(response.status).toEqual(200);
-  })
+  });
 
-  it("should respond with a valid recommendation", async ()=>{
+  it("should respond with a valid recommendation", async () => {
     const response = await getRandom();
     expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendation);
   });

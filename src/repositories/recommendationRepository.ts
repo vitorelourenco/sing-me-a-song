@@ -52,7 +52,7 @@ async function downvote(id:number){
 async function remove(id:number){
   await connection.query(`
     DELETE 
-    FROM genres_recommendations
+    FROM "genres_recommendations"
     WHERE "recommendationId" = $1
   `,[id]);
 
@@ -63,9 +63,38 @@ async function remove(id:number){
   `,[id]);
 }
 
+async function getRecommendationsWithScore(scoreBoundary:number, comparison:"<"|">="|">"|"<="|"==="|"!=="){
+  const dbRecommendations = await connection.query(`
+    SELECT * 
+    FROM recommendations
+    WHERE score ${comparison} $1
+  `,[scoreBoundary]);
+  return dbRecommendations.rows;
+}
+
+async function getGenres(){
+  const dbGenres = await connection.query(`
+    SELECT * 
+    FROM genres
+  `);
+  return dbGenres.rows;
+}
+
+async function getGenresRecommendations(){
+  const dbGenres_Recommendations =  await connection.query(`
+    SELECT * 
+    FROM "genres_recommendations"
+  `);
+  return dbGenres_Recommendations.rows;
+}
+
+
 export default {
   create,
   remove,
   upvote,
-  downvote
+  downvote,
+  getRecommendationsWithScore,
+  getGenres,
+  getGenresRecommendations
 }

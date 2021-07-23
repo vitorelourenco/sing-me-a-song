@@ -42,3 +42,13 @@ export async function upvote(req: Request, res:Response){
 export async function downvote(req: Request, res:Response){
   await vote(req,res,recommendationService.downvote)
 }
+
+export async function getRandom(req: Request, res:Response){
+  try {
+    const recommendation = await recommendationService.getRandomRecommendation();
+    res.send(recommendation);
+  } catch(err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
