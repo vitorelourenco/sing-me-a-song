@@ -51,7 +51,6 @@ async function getById(id:number){
   genre.score = genreScore;
   genre.recommendations = recommendationsForThisGenre;
 
-  console.log(genre);
   return genre;
 }
 
