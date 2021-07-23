@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import { Router } from "express";
 import genreController from "../controllers/genreController";
 
 const genres = Router();

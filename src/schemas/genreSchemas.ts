@@ -1,9 +1,9 @@
-import joi from 'joi';
+import joi from "joi";
 
 const create = joi.object({
-  name: joi.string().min(1).required()
+  name: joi.string().min(1).required(),
 });
 
 export default {
-  create
-}
+  create,
+};

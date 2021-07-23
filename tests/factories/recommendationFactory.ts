@@ -1,34 +1,45 @@
 import connection from "../../src/database";
 
-export async function createRecommendation() {
-  const name = "test";
-  const youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  const genresIds = [1,2]
-  const dbRecommendationId = await connection.query(`
+export async function createRecommendation({
+  youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  name = "test",
+  genresIds = [1, 2],
+  score = 0
+} = {}) {
+  const dbRecommendationId = await connection.query(
+    `
     INSERT INTO recommendations
-    (name, "youtubeLink")
+    (name, "youtubeLink", score)
     VALUES
-    ($1, $2)
+    ($1, $2, $3)
     RETURNING *
-  `,[name, youtubeLink]);
+  `,
+    [name, youtubeLink, score]
+  );
   const newRecommendation = dbRecommendationId.rows[0];
   newRecommendation.genres = [];
 
-  for (const genreId of genresIds){
-    await connection.query(`
+  for (const genreId of genresIds) {
+    await connection.query(
+      `
       INSERT INTO "genres_recommendations"
       ("genreId", "recommendationId")
       VALUES
       ($1, $2)
-    `,[genreId, newRecommendation.id]);
+    `,
+      [genreId, newRecommendation.id]
+    );
 
-    const dbGenre = await connection.query(`
+    const dbGenre = await connection.query(
+      `
       SELECT *
       FROM genres
       WHERE id = $1
-    `,[genreId]);
+    `,
+      [genreId]
+    );
 
-    newRecommendation.genres.push(dbGenre.rows[0])
+    newRecommendation.genres.push(dbGenre.rows[0]);
   }
 
   return newRecommendation;
