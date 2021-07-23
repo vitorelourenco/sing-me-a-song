@@ -85,3 +85,28 @@ describe("GET /genres", ()=>{
     expect(response.status).toEqual(404);
   });
 });
+
+
+describe("GET /genres/:id", ()=>{
+  beforeEach(async()=>{
+    await fillDatabase();
+  })
+
+  const getGenres = async()=>agent.get("/genres:id");
+ 
+  it("should respond with status 200", async()=>{
+    const response = await getGenres();
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with a list of valid genred recommendations", async()=>{
+    const response = await getGenres();
+    expect(response.body).toMatchSchema(genreSchemas.dbGenredRecommendations);
+  });
+
+  it("should respond with status 404 if the DB is empty", async()=>{
+    await clearDatabase();
+    const response = await getGenres();
+    expect(response.status).toEqual(404);
+  });
+});

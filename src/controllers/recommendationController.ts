@@ -45,10 +45,10 @@ export async function downvote(req: Request, res: Response) {
   await vote(req, res, recommendationService.downvote);
 }
 
-export async function getRandom(req: Request, res: Response) {
+export async function getRandomWithScore(req: Request, res: Response) {
   try {
     const recommendation =
-      await recommendationService.getRandomRecommendation();
+      await recommendationService.getRandomWithScore();
     res.send(recommendation);
   } catch (err) {
     console.log(err);
@@ -59,7 +59,7 @@ export async function getRandom(req: Request, res: Response) {
 
 export async function getTopRecommendations(req:Request, res:Response){
   try {
-    const topRecommendations = await recommendationService.getTopRecommendations(req);
+    const topRecommendations = await recommendationService.getTopWithLimit(req);
     res.send(topRecommendations);
   } catch (err) {
     console.log(err);

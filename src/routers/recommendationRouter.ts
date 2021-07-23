@@ -3,7 +3,7 @@ import {
   create,
   upvote,
   downvote,
-  getRandom,
+  getRandomWithScore,
   getTopRecommendations,
 } from "../controllers/recommendationController";
 
@@ -13,7 +13,7 @@ recommendation.post("/", create);
 recommendation.post("/:id/upvote", upvote);
 recommendation.post("/:id/downvote", downvote);
 
-recommendation.get("/random", getRandom);
+recommendation.get("/random", getRandomWithScore);
 recommendation.get("/top/:amount", getTopRecommendations);
 
 

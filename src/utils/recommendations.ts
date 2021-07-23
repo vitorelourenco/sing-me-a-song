@@ -2,6 +2,12 @@ import connection from "../database";
 import recommendationRepository from "../repositories/recommendationRepository";
 import ErrorWithStatus from "./errorWithStatus";
 
+interface Recommendation {
+  id: number,
+  score: number,
+  name: string,
+  youtubeLink: string,
+}
 interface Genre {
   id: number;
   name: string;
@@ -11,12 +17,8 @@ interface GenreRecommendation {
   genreId: number;
   recommendationId: number;
 }
-interface MergedRecommendation {
-  id: number;
+export interface RecommendationWithGenres extends Recommendation{
   genres: Genre[];
-  youtubeLink: string;
-  score: number;
-  name: string;
 }
 
 export function makeGenresObj(genresArr: Genre[]) {
@@ -47,14 +49,9 @@ export function makeGenresRecommendationsObj(
 }
 
 export async function mergeGenresWithRecommendations(
-  scoreBoundary: number,
-  comparison: "<" | ">=" | ">" | "<=" | "===" | "!=="
+  recommendations: Recommendation[],
 ) {
-  const recomendationsWithScoreArr =
-    await recommendationRepository.getRecommendationsWithScore(
-      scoreBoundary,
-      comparison
-    );
+
   const genresArr = await recommendationRepository.getGenres();
   const genresRecommendationsArr =
     await recommendationRepository.getGenresRecommendations();
@@ -65,7 +62,7 @@ export async function mergeGenresWithRecommendations(
     genres
   );
 
-  const mergedRecommendations: any[] = recomendationsWithScoreArr;
+  const mergedRecommendations: any[] = recommendations;
   mergedRecommendations.forEach((row) => {
     row.genres = genresOfRecommendations[row.id];
   });
@@ -73,32 +70,55 @@ export async function mergeGenresWithRecommendations(
 }
 
 export async function pickRandomWinner(
-  mergedRecommendations: MergedRecommendation[]
+  mergedRecommendations: RecommendationWithGenres[]
 ) {
   const finalRecommendation = await (async () => {
     if (mergedRecommendations[0]) {
       mergedRecommendations.sort(() => 0.5 - Math.random());
       return mergedRecommendations[0];
     }
-    //pick any recommendation with any score that is an integer
-    const lastResort = await mergeGenresWithRecommendations(-2147483648, ">=");
-    if (lastResort[0]) {
-      lastResort.sort(() => 0.5 - Math.random());
-      return lastResort[0];
-    }
-    throw new ErrorWithStatus("smas404");
+    //pick any recommendation with any score
+    const allRecommendations = await getAllRecommendations();
+    const allMergedRecommendations = await mergeGenresWithRecommendations(allRecommendations);
+    allMergedRecommendations.sort(() => 0.5 - Math.random());
+    return allMergedRecommendations[0];
   })();
 
   return finalRecommendation;
 }
 
-export function setupRandomRecommendation(): {
-  scoreBoundary: number;
-  comparison: "<" | ">=" | ">" | "<=" | "===" | "!==";
-} {
-  const tossUp = Math.random();
-  const randomBoundary = 0.7;
-  const scoreBoundary = 11;
-  const comparison = tossUp < randomBoundary ? "<" : ">=";
-  return { scoreBoundary, comparison };
+export function recommendationSubQuery(criteria:"randomScore"|"top"|"", value?:number){
+  function subQueryUsingRandomScore(){
+    const tossUp = Math.random();
+    const randomBoundary = 0.7;
+    const scoreBoundary = 11;
+    const comparison = tossUp < randomBoundary ? "<" : ">=";
+    return `WHERE score ${comparison} ${scoreBoundary}`;
+  }
+  function subQueryUsingTopAmount(){
+    return `
+      ORDER BY score DESC
+      ${value ? `LIMIT ${value}` : ""}
+    `
+  }
+  function subQueryUsingNothing(){
+    return "";
+  }
+  
+  switch (criteria){
+    case "randomScore": return subQueryUsingRandomScore();
+    case "top": return subQueryUsingTopAmount();
+    default: return subQueryUsingNothing();
+  }
 }
+
+export async function getRecommendationsWithRandomScore(){
+  const randomScoreSubQuery = recommendationSubQuery("randomScore");
+  const recommendations = await recommendationRepository.getRecommendationsWithSubQuery(randomScoreSubQuery);
+  return recommendations;
+}
+
+export async function getAllRecommendations(){
+  const recommendations = await recommendationRepository.getRecommendationsWithSubQuery("");
+  return recommendations;
+};
