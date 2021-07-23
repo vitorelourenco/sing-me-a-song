@@ -18,6 +18,18 @@ async function create(req: Request, res: Response) {
   }
 }
 
+async function getAll(req:Request, res:Response){
+  try {
+    const genreList = await genreService.getAll();
+    res.send(genreList);
+  } catch (err) {
+    console.log(err);
+    if (err?.code() === "smas404") return res.sendStatus(404);
+    res.sendStatus(500);
+  }
+}
+
 export default {
   create,
+  getAll
 };
