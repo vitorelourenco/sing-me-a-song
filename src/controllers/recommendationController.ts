@@ -48,8 +48,7 @@ export async function downvote(req: Request, res: Response) {
 
 export async function getRandomWithScore(req: Request, res: Response) {
   try {
-    const recommendation =
-      await recommendationService.getRandomWithScore();
+    const recommendation = await recommendationService.getRandomWithScore();
     res.send(recommendation);
   } catch (err) {
     printError(err);
@@ -58,7 +57,7 @@ export async function getRandomWithScore(req: Request, res: Response) {
   }
 }
 
-export async function getTopRecommendations(req:Request, res:Response){
+export async function getTopRecommendations(req: Request, res: Response) {
   try {
     const topRecommendations = await recommendationService.getTopWithLimit(req);
     res.send(topRecommendations);

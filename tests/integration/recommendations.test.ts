@@ -141,8 +141,7 @@ describe("GET /recommendations/random", () => {
     await fillDatabase();
   });
 
-  const getRandom = async () =>
-    await agent.get(`/recommendations/random`);
+  const getRandom = async () => await agent.get(`/recommendations/random`);
 
   it("should respond with status 200", async () => {
     const response = await getRandom();
@@ -183,7 +182,9 @@ describe("GET /recommendations/top/:amount", () => {
 
   it("should respond with a valid list of recommendations", async () => {
     const response = await getTop(amount);
-    expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendationList);
+    expect(response.body).toMatchSchema(
+      recommendationSchemas.dbRecommendationList
+    );
   });
 
   it("should respond with a list not larger than $AMOUNT", async () => {
@@ -198,13 +199,12 @@ describe("GET /recommendations/top/:amount", () => {
   });
 });
 
-
 describe("GET /recommendations/genres/:id/random", () => {
   beforeEach(async () => {
     await fillDatabase();
   });
 
-  const getRandomOfGenreId = async (id:number) =>
+  const getRandomOfGenreId = async (id: number) =>
     await agent.get(`/recommendations/genres/${id}/random`);
 
   it("should respond with status 200", async () => {
@@ -219,7 +219,9 @@ describe("GET /recommendations/genres/:id/random", () => {
 
   it("should respond with a recommendation that contains the genre", async () => {
     const response = await getRandomOfGenreId(1);
-    const includesGenre:boolean = !!response.body.genres.find((genre:{id:number, name:string})=>genre.id===1);
+    const includesGenre: boolean = !!response.body.genres.find(
+      (genre: { id: number; name: string }) => genre.id === 1
+    );
     expect(includesGenre).toEqual(true);
   });
 

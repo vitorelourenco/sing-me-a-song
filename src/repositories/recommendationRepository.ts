@@ -81,13 +81,13 @@ async function remove(id: number) {
   );
 }
 
-async function getRecommendationsWithSubQuery(subQuery:string) {
+async function getRecommendationsWithSubQuery(subQuery: string) {
   const dbRecommendations = await connection.query(
     `
     SELECT * 
     FROM recommendations
     ${subQuery}
-  `,
+  `
   );
   return dbRecommendations.rows;
 }

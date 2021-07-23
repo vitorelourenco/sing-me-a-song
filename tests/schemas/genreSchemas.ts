@@ -12,11 +12,11 @@ const dbGenreWithRecommendations = joi.object({
   id: joi.number().integer().min(1).required(),
   name: joi.string().min(1).required(),
   score: joi.number().integer().required(),
-  recommendations: recommendationSchemas.dbRecommendationList
-})
+  recommendations: recommendationSchemas.dbRecommendationList,
+});
 
 export default {
   dbGenre,
   dbGenreList,
-  dbGenreWithRecommendations
+  dbGenreWithRecommendations,
 };

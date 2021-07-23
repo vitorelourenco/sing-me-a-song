@@ -4,7 +4,7 @@ export async function createRecommendation({
   youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   name = "test",
   genresIds = [1, 2],
-  score = 0
+  score = 0,
 } = {}) {
   const dbRecommendationId = await connection.query(
     `

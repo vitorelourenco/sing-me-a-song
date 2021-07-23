@@ -1,10 +1,10 @@
 import recommendationRepository from "../repositories/recommendationRepository";
 
 interface Recommendation {
-  id: number,
-  score: number,
-  name: string,
-  youtubeLink: string,
+  id: number;
+  score: number;
+  name: string;
+  youtubeLink: string;
 }
 export interface Genre {
   id: number;
@@ -15,7 +15,7 @@ interface GenreRecommendation {
   genreId: number;
   recommendationId: number;
 }
-export interface RecommendationWithGenres extends Recommendation{
+export interface RecommendationWithGenres extends Recommendation {
   genres: Genre[];
 }
 
@@ -47,9 +47,8 @@ export function makeGenresRecommendationsObj(
 }
 
 export async function mergeGenresWithRecommendations(
-  recommendations: Recommendation[],
+  recommendations: Recommendation[]
 ) {
-
   const genresArr = await recommendationRepository.getGenres();
   const genresRecommendationsArr =
     await recommendationRepository.getGenresRecommendations();
@@ -77,7 +76,9 @@ export async function pickRandomWinner(
     }
     //pick any recommendation with any score
     const allRecommendations = await getAllRecommendations();
-    const allMergedRecommendations = await mergeGenresWithRecommendations(allRecommendations);
+    const allMergedRecommendations = await mergeGenresWithRecommendations(
+      allRecommendations
+    );
     allMergedRecommendations.sort(() => 0.5 - Math.random());
     return allMergedRecommendations[0];
   })();
@@ -85,38 +86,48 @@ export async function pickRandomWinner(
   return finalRecommendation;
 }
 
-export function recommendationSubQuery(criteria:"randomScore"|"top"|"", value?:number){
-  function subQueryUsingRandomScore(){
+export function recommendationSubQuery(
+  criteria: "randomScore" | "top" | "",
+  value?: number
+) {
+  function subQueryUsingRandomScore() {
     const tossUp = Math.random();
     const randomBoundary = 0.7;
     const scoreBoundary = 11;
     const comparison = tossUp < randomBoundary ? "<" : ">=";
     return `WHERE score ${comparison} ${scoreBoundary}`;
   }
-  function subQueryUsingTopAmount(){
+  function subQueryUsingTopAmount() {
     return `
       ORDER BY score DESC
       ${value ? `LIMIT ${value}` : ""}
-    `
+    `;
   }
-  function subQueryUsingNothing(){
+  function subQueryUsingNothing() {
     return "";
   }
-  
-  switch (criteria){
-    case "randomScore": return subQueryUsingRandomScore();
-    case "top": return subQueryUsingTopAmount();
-    default: return subQueryUsingNothing();
+
+  switch (criteria) {
+    case "randomScore":
+      return subQueryUsingRandomScore();
+    case "top":
+      return subQueryUsingTopAmount();
+    default:
+      return subQueryUsingNothing();
   }
 }
 
-export async function getRecommendationsWithRandomScore(){
+export async function getRecommendationsWithRandomScore() {
   const randomScoreSubQuery = recommendationSubQuery("randomScore");
-  const recommendations = await recommendationRepository.getRecommendationsWithSubQuery(randomScoreSubQuery);
+  const recommendations =
+    await recommendationRepository.getRecommendationsWithSubQuery(
+      randomScoreSubQuery
+    );
   return recommendations;
 }
 
-export async function getAllRecommendations(){
-  const recommendations = await recommendationRepository.getRecommendationsWithSubQuery("");
+export async function getAllRecommendations() {
+  const recommendations =
+    await recommendationRepository.getRecommendationsWithSubQuery("");
   return recommendations;
-};
+}

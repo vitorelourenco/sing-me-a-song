@@ -22,5 +22,5 @@ const dbRecommendationList = joi.array().items(dbRecommendation).required();
 
 export default {
   dbRecommendation,
-  dbRecommendationList
+  dbRecommendationList,
 };

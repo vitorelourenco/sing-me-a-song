@@ -13,23 +13,26 @@ async function create(genre: string) {
   );
 }
 
-async function getAll(){
+async function getAll() {
   return await connection.query(`
     SELECT *
     FROM genres
   `);
 }
 
-async function getById(id:number){
-  return await connection.query(`
+async function getById(id: number) {
+  return await connection.query(
+    `
     SELECT * 
     FROM genres
     WHERE id = $1
-  `,[id])
+  `,
+    [id]
+  );
 }
 
 export default {
   create,
   getAll,
-  getById
+  getById,
 };

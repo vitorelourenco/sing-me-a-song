@@ -78,9 +78,8 @@ async function getTopWithLimit(req: Request) {
   return orderedRecommendationsWithGenres;
 }
 
-async function getAll(){
-  const all =
-    await getRecommendationsWithGenresUsingSubquery("");
+async function getAll() {
+  const all = await getRecommendationsWithGenresUsingSubquery("");
   if (!all[0]) {
     throw new ErrorWithStatus("smas404");
   }
@@ -88,8 +87,7 @@ async function getAll(){
 }
 
 async function getRandomByGenreId(id: number) {
-  const genreWithRecommendations =
-    await genreService.getById(id) 
+  const genreWithRecommendations = await genreService.getById(id);
 
   if (!genreWithRecommendations || !genreWithRecommendations?.recommendations) {
     throw new ErrorWithStatus("smas404");
@@ -105,5 +103,5 @@ export default {
   getRandomWithScore,
   getTopWithLimit,
   getAll,
-  getRandomByGenreId
+  getRandomByGenreId,
 };

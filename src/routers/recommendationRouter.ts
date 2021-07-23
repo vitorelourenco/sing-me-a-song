@@ -5,7 +5,7 @@ import {
   downvote,
   getRandomWithScore,
   getTopRecommendations,
-  getRandomByGenreId
+  getRandomByGenreId,
 } from "../controllers/recommendationController";
 
 const recommendation = Router();

@@ -1,7 +1,7 @@
 import genreService from "../services/genreService";
 import genreSchemas from "../schemas/genreSchemas";
 import { Request, Response } from "express";
-import {printError} from '../utils/errorWithStatus';
+import { printError } from "../utils/errorWithStatus";
 
 async function create(req: Request, res: Response) {
   try {
@@ -19,7 +19,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function getAll(req:Request, res:Response){
+async function getAll(req: Request, res: Response) {
   try {
     const genreList = await genreService.getAll();
     res.send(genreList);
@@ -30,7 +30,7 @@ async function getAll(req:Request, res:Response){
   }
 }
 
-async function getById(req:Request, res:Response){
+async function getById(req: Request, res: Response) {
   try {
     const id = parseInt(req.params.id);
     const genreWithRecommendations = await genreService.getById(id);
@@ -45,5 +45,5 @@ async function getById(req:Request, res:Response){
 export default {
   create,
   getAll,
-  getById
+  getById,
 };
