@@ -20,7 +20,16 @@ async function getAll(){
   `);
 }
 
+async function getById(id:number){
+  return await connection.query(`
+    SELECT * 
+    FROM genres
+    WHERE id = $1
+  `,[id])
+}
+
 export default {
   create,
-  getAll
+  getAll,
+  getById
 };
