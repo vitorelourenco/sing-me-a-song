@@ -1,4 +1,6 @@
+import connection from "../database";
 import recommendationRepository from "../repositories/recommendationRepository";
+import ErrorWithStatus from "./errorWithStatus";
 
 interface Genre {
   id: number;
@@ -70,22 +72,24 @@ export async function mergeGenresWithRecommendations(
   return mergedRecommendations;
 }
 
-export function pickRandomWinner(
+export async function pickRandomWinner(
   mergedRecommendations: MergedRecommendation[]
 ) {
-  mergedRecommendations.sort(() => 0.5 - Math.random());
 
-  if (!mergedRecommendations[0]) {
-    //just send something if there's no match in the DB
-    return {
-      id: 2147483647,
-      name: "fake",
-      genres: [{ id: 2147483647, name: "fake" }],
-      youtubeLink: "https://www.youtube.com/watch?v=oavMtUWDBTM",
-      score: 2147483647,
-    };
-  }
-  return mergedRecommendations[0];
+  const finalRecommendation = await (async()=>{
+    if (mergedRecommendations[0]){
+      mergedRecommendations.sort(() => 0.5 - Math.random());
+      return mergedRecommendations[0]
+    }
+    const lastResort = await mergeGenresWithRecommendations(-2147483648, ">=");
+    if (lastResort[0]){
+      lastResort.sort(() => 0.5 - Math.random());
+      return lastResort[0];
+    }
+    throw new ErrorWithStatus("smas404")
+  })();
+
+  return finalRecommendation;
 }
 
 export function setupRandomRecommendation(): {

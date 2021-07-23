@@ -49,6 +49,7 @@ export async function getRandom(req: Request, res:Response){
     res.send(recommendation);
   } catch(err) {
     console.log(err);
+    if (err?.code() === "smas404") return res.sendStatus(404);
     res.sendStatus(500);
   }
 }

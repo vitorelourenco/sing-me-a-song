@@ -176,4 +176,10 @@ describe("GET /recommendations/random", () => {
     const response = await getRandom();
     expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendation);
   });
+
+  it("should respond with status 404 if the database is empty", async () => {
+    await clearDatabase();
+    const response = await getRandom();
+    expect(response.status).toEqual(404);
+  });
 });
