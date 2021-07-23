@@ -2,6 +2,7 @@ import "../../src/setup";
 
 import supertest from "supertest";
 import app from "../../src/app";
+import { Request } from "express";
 import toMatchSchema from "../schemas/toMatchSchema";
 import recommendations from "../utils/recommendations";
 import recommendationSchemas from "../schemas/recommendationSchemas";
@@ -9,7 +10,7 @@ import {
   clearDatabase,
   closeConnection,
   clearRecommendations,
-  fillDatabase
+  fillDatabase,
 } from "../utils/database";
 import { createRecommendation } from "../factories/recommendationFactory";
 
@@ -23,13 +24,15 @@ afterAll(async () => {
   await closeConnection();
 });
 
+const agent = supertest(app);
+
 describe("POST /recommendations", () => {
   beforeEach(async () => {
     await clearRecommendations();
   });
 
   const postThis = async (data: object) =>
-    await supertest(app).post("/recommendations").send(data);
+    await agent.post("/recommendations").send(data);
 
   it("should respond with status 201 for a successful request", async () => {
     const response = await postThis(recommendations.valid);
@@ -81,7 +84,7 @@ describe("POST /recommendations/:id/upvote", () => {
   });
 
   const upvoteThis = async (id: number) =>
-    await supertest(app).post(`/recommendations/${id}/upvote`);
+    await agent.post(`/recommendations/${id}/upvote`);
 
   it("should respond with status 200 if the ID exists", async () => {
     const response = await upvoteThis(recommendation.id);
@@ -107,7 +110,7 @@ describe("POST /recommendations/:id/downvote", () => {
   });
 
   const downvoteThis = async (id: number) =>
-    await supertest(app).post(`/recommendations/${id}/downvote`);
+    await agent.post(`/recommendations/${id}/downvote`);
 
   it("should respond with status 200 if the ID exists", async () => {
     const response = await downvoteThis(recommendation.id);
@@ -135,11 +138,11 @@ describe("POST /recommendations/:id/downvote", () => {
 
 describe("GET /recommendations/random", () => {
   beforeAll(async () => {
-    await fillDatabase()
+    await fillDatabase();
   });
 
   const getRandom = async () =>
-    await supertest(app).get(`/recommendations/random`);
+    await agent.get(`/recommendations/random`);
 
   it("should respond with status 200", async () => {
     const response = await getRandom();
@@ -154,6 +157,43 @@ describe("GET /recommendations/random", () => {
   it("should respond with status 404 if the database is empty", async () => {
     await clearDatabase();
     const response = await getRandom();
+    expect(response.status).toEqual(404);
+  });
+});
+
+describe("GET /recommendations/top/:amount", () => {
+  beforeAll(async () => {
+    await fillDatabase();
+  });
+
+  const getTop = async (amount: number) =>
+    await agent.get(`/recommendations/top/${amount}`);
+
+  const amount = 5;
+
+  it("should respond with status 200 if there are items in DB", async () => {
+    const response = await getTop(amount);
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with status 200 regardless of $AMOUNT if there are items in DB", async () => {
+    const response = await getTop(NaN);
+    expect(response.status).toEqual(200);
+  });
+
+  it("should respond with a valid list of recommendations", async () => {
+    const response = await getTop(amount);
+    expect(response.body).toMatchSchema(recommendationSchemas.dbRecommendationList);
+  });
+
+  it("should respond with a list not larger than $AMOUNT", async () => {
+    const response = await getTop(amount);
+    expect(response.body.length).toBeLessThanOrEqual(amount);
+  });
+
+  it("should respond with status 404 if the database is empty", async () => {
+    await clearDatabase();
+    const response = await getTop(amount);
     expect(response.status).toEqual(404);
   });
 });

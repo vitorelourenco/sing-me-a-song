@@ -6,6 +6,7 @@ import {
   mergeGenresWithRecommendations,
   pickRandomWinner,
 } from "../utils/recommendations";
+import {Request} from 'express';
 
 async function create(body: {
   name: string;
@@ -53,9 +54,28 @@ async function getRandomRecommendation() {
   return pickRandomWinner(recommendationsWithGenres);
 }
 
+async function getTopRecommendations(req:Request){
+  const amount = parseInt(req.params.amount);
+  
+  const recommendationsList = await (async ()=>{
+    const list = await mergeGenresWithRecommendations(-2147483648, ">=");
+    if (list.length === 0){
+      throw new ErrorWithStatus("smas404");
+    };
+    list.sort((a,b)=> b.score - a.score);
+    if (amount){
+      list.splice(amount,);
+    }
+    return list;
+  })();
+
+  return recommendationsList;
+}
+
 export default {
   create,
   upvote,
   downvote,
   getRandomRecommendation,
+  getTopRecommendations
 };

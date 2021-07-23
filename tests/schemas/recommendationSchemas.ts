@@ -18,6 +18,9 @@ const dbRecommendation = joi.object({
   score: joi.number().integer(),
 });
 
+const dbRecommendationList = joi.array().items(dbRecommendation).required();
+
 export default {
   dbRecommendation,
+  dbRecommendationList
 };
