@@ -5,6 +5,7 @@ const dbRecommendation = joi.object({
   name: joi.string().min(1).required(),
   genres: joi
     .array()
+    .unique()
     .items(
       joi
         .object({
