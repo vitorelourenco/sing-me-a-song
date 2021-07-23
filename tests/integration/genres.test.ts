@@ -4,7 +4,12 @@ import supertest from "supertest";
 import app from "../../src/app";
 import toMatchSchema from "../schemas/toMatchSchema";
 import genreSchemas from "../schemas/genreSchemas";
-import { clearDatabase, clearGenres, closeConnection, fillDatabase } from "../utils/database";
+import {
+  clearDatabase,
+  clearGenres,
+  closeConnection,
+  fillDatabase,
+} from "../utils/database";
 import genres from "../utils/genres";
 expect.extend({ toMatchSchema });
 
@@ -20,7 +25,7 @@ afterAll(async () => {
   await closeConnection();
 });
 
-const agent = supertest(app)
+const agent = supertest(app);
 
 describe("POST /genres", () => {
   beforeEach(async () => {
@@ -62,49 +67,50 @@ describe("POST /genres", () => {
   });
 });
 
-describe("GET /genres", ()=>{
-  beforeEach(async()=>{
+describe("GET /genres", () => {
+  beforeEach(async () => {
     await fillDatabase();
-  })
+  });
 
-  const getGenres = async()=>agent.get("/genres");
- 
-  it("should respond with status 200", async()=>{
+  const getGenres = async () => agent.get("/genres");
+
+  it("should respond with status 200", async () => {
     const response = await getGenres();
     expect(response.status).toEqual(200);
   });
 
-  it("should respond with a list of valid genres", async()=>{
+  it("should respond with a list of valid genres", async () => {
     const response = await getGenres();
     expect(response.body).toMatchSchema(genreSchemas.dbGenreList);
   });
 
-  it("should respond with status 404 if the DB is empty", async()=>{
+  it("should respond with status 404 if the DB is empty", async () => {
     await clearDatabase();
     const response = await getGenres();
     expect(response.status).toEqual(404);
   });
 });
 
-
-describe("GET /genres/:id", ()=>{
-  beforeEach(async()=>{
+describe("GET /genres/:id", () => {
+  beforeEach(async () => {
     await fillDatabase();
-  })
+  });
 
-  const getGenreById = async(id:number)=>agent.get(`/genres/${id}`);
- 
-  it("should respond with status 200", async()=>{
+  const getGenreById = async (id: number) => await agent.get(`/genres/${id}`);
+
+  it("should respond with status 200", async () => {
     const response = await getGenreById(1);
     expect(response.status).toEqual(200);
   });
 
-  it("should respond with a genred recommendations object", async()=>{
+  it("should respond with a genre object with its recommendations", async () => {
     const response = await getGenreById(1);
-    expect(response.body.recommendations).toMatchSchema(genreSchemas.dbGenredRecommendations);
+    expect(response.body).toMatchSchema(
+      genreSchemas.dbGenreWithRecommendations
+    );
   });
 
-  it("should respond with status 404 if the DB is empty", async()=>{
+  it("should respond with status 404 if the DB is empty", async () => {
     await clearDatabase();
     const response = await getGenreById(1);
     expect(response.status).toEqual(404);

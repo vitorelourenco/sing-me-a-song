@@ -8,7 +8,7 @@ const dbGenre = joi.object({
 
 const dbGenreList = joi.array().items(dbGenre).required();
 
-const dbGenredRecommendations = joi.object({
+const dbGenreWithRecommendations = joi.object({
   id: joi.number().integer().min(1).required(),
   name: joi.string().min(1).required(),
   score: joi.number().integer().required(),
@@ -18,5 +18,5 @@ const dbGenredRecommendations = joi.object({
 export default {
   dbGenre,
   dbGenreList,
-  dbGenredRecommendations
+  dbGenreWithRecommendations
 };

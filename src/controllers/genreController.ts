@@ -31,8 +31,9 @@ async function getAll(req:Request, res:Response){
 
 async function getById(req:Request, res:Response){
   try {
-    const genreList = await genreService.getAll();
-    res.send(genreList);
+    const id = parseInt(req.params.id);
+    const genreWithRecommendations = await genreService.getById(id);
+    res.send(genreWithRecommendations);
   } catch (err) {
     console.log(err);
     if (err?.code() === "smas404") return res.sendStatus(404);

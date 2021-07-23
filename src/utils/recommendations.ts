@@ -1,6 +1,4 @@
-import connection from "../database";
 import recommendationRepository from "../repositories/recommendationRepository";
-import ErrorWithStatus from "./errorWithStatus";
 
 interface Recommendation {
   id: number,
@@ -8,7 +6,7 @@ interface Recommendation {
   name: string,
   youtubeLink: string,
 }
-interface Genre {
+export interface Genre {
   id: number;
   name: string;
 }

@@ -4,7 +4,6 @@ import ErrorWithStatus from "../utils/errorWithStatus";
 import {
   mergeGenresWithRecommendations,
   pickRandomWinner,
-  RecommendationWithGenres,
   recommendationSubQuery,
 } from "../utils/recommendations";
 import { Request } from "express";
@@ -78,10 +77,20 @@ async function getTopWithLimit(req: Request) {
   return orderedRecommendationsWithGenres;
 }
 
+async function getAll(){
+  const all =
+    await getRecommendationsWithGenresUsingSubquery("");
+  if (!all[0]) {
+    throw new ErrorWithStatus("smas404");
+  }
+  return all;
+}
+
 export default {
   create,
   upvote,
   downvote,
   getRandomWithScore,
   getTopWithLimit,
+  getAll
 };
