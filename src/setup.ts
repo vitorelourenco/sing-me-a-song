@@ -1,15 +1,16 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
-const path:string = (() => {
+const path: string = (() => {
   switch (process.env.NODE_ENV) {
-    case "test":
-      return "./.env.test";
-    case "dev":
-      return "./.env";
-    default: return null;
+    case 'test':
+      return './.env.test';
+    case 'dev':
+      return './.env';
+    default:
+      return null;
   }
 })();
 
-if (path){
+if (path) {
   dotenv.config({ path });
 }
